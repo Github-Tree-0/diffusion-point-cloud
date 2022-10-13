@@ -1,4 +1,3 @@
-*
-!.gitignore
-!nerf/*
+*.hdf5
+*.pt
 
