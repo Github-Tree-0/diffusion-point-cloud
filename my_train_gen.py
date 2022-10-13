@@ -88,7 +88,7 @@ def train(model, optimizer, scheduler, it):
     return loss.item()
 
 if __name__ == '__main__':
-    wandb.init(config=args)
+    wandb.init(config=args, project='diffusion-point-cloud')
     # Model
     print('Building model...')
     model = MyVAE(args).to(args.device)
