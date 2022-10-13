@@ -132,4 +132,4 @@ dmypy.json
 /playgrounds
 /logs*
 
-./wandb/*
+wandb/*
