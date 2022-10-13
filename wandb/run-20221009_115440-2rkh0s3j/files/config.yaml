@@ -1,0 +1,107 @@
+wandb_version: 1
+
+_wandb:
+  desc: null
+  value:
+    cli_version: 0.13.4
+    framework: torch
+    is_jupyter_run: false
+    is_kaggle_kernel: false
+    python_version: 3.7.14
+    start_time: 1665316480.113633
+    t:
+      1:
+      - 1
+      - 5
+      - 53
+      - 55
+      2:
+      - 1
+      - 5
+      - 53
+      - 55
+      3:
+      - 16
+      - 23
+      4: 3.7.14
+      5: 0.13.4
+      8:
+      - 5
+beta_1:
+  desc: null
+  value: 0.0001
+beta_T:
+  desc: null
+  value: 0.02
+device:
+  desc: null
+  value: cuda
+end_lr:
+  desc: null
+  value: 0.0001
+flexibility:
+  desc: null
+  value: 0.0
+latent_dim:
+  desc: null
+  value: 256
+latent_flow_depth:
+  desc: null
+  value: 14
+latent_flow_hidden_dim:
+  desc: null
+  value: 256
+log_root:
+  desc: null
+  value: ./logs_gen
+lr:
+  desc: null
+  value: 0.002
+max_grad_norm:
+  desc: null
+  value: 10
+max_iters:
+  desc: null
+  value: .inf
+model:
+  desc: null
+  value: flow
+num_samples:
+  desc: null
+  value: 4
+num_steps:
+  desc: null
+  value: 100
+residual:
+  desc: null
+  value: true
+sample_num_points:
+  desc: null
+  value: 2048
+sched_end_epoch:
+  desc: null
+  value: 400000
+sched_mode:
+  desc: null
+  value: linear
+sched_start_epoch:
+  desc: null
+  value: 200000
+spectral_norm:
+  desc: null
+  value: false
+src_dir:
+  desc: null
+  value: /content/drive/MyDrive/K-D_Tree_NeRF/diffusion-point-cloud/data/nerf
+tag:
+  desc: null
+  value: null
+truncate_std:
+  desc: null
+  value: 2.0
+val_freq:
+  desc: null
+  value: 100
+weight_decay:
+  desc: null
+  value: 0
