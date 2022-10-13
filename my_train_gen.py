@@ -121,10 +121,6 @@ if __name__ == '__main__':
             if it % args.val_freq == args.val_freq - 1 or it == args.max_iters - 1:
                 print('iteration: {}, loss = {}'.format(it, acc_loss / args.val_freq))
                 acc_loss = 0.0
-                # opt_states = {
-                #     'optimizer': optimizer.state_dict(),
-                #     'scheduler': scheduler.state_dict(),
-                # }
                 with torch.no_grad():
                     samples = model.sample()[0].detach().cpu()
                 fig = plot(samples)
@@ -132,6 +128,10 @@ if __name__ == '__main__':
                 wandb.log({"gen_pcd": image})
             if it % args.increase_freq == args.increase_freq - 1:
                 with torch.no_grad():
+                    opt_states = {
+                        'optimizer': optimizer.state_dict(),
+                        'scheduler': scheduler.state_dict(),
+                    }
                     ckpt_mgr.save(model, args, 0, others=opt_states, step=it)
                     model.enlarge_sample_num()
             it += 1
