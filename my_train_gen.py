@@ -50,10 +50,10 @@ parser.add_argument('--sched_end_epoch', type=int, default=400*THOUSAND)
 parser.add_argument('--device', type=str, default='cuda')
 parser.add_argument('--log_root', type=str, default='./logs_gen')
 parser.add_argument('--val_freq', type=int, default=2000)
-parser.add_argument('--increase_freq', type=int, default=20000)
+parser.add_argument('--increase_freq', type=int, default=30000)
 parser.add_argument('--max_iters', type=int, default=float('inf'))
 parser.add_argument('--tag', type=str, default=None)
-parser.add_argument('--src_dir', type=str, default='/content/drive/MyDrive/K-D_Tree_NeRF/diffusion-point-cloud/data/nerf')
+parser.add_argument('--src_dir', type=str, default='..//diffusion-point-cloud/data/nerf')
 args = parser.parse_args()
 
 def plot(pts):
@@ -125,7 +125,6 @@ if __name__ == '__main__':
                 #     'optimizer': optimizer.state_dict(),
                 #     'scheduler': scheduler.state_dict(),
                 # }
-                # ckpt_mgr.save(model, args, 0, others=opt_states, step=it)
                 with torch.no_grad():
                     samples = model.sample()[0].detach().cpu()
                 fig = plot(samples)
@@ -133,6 +132,7 @@ if __name__ == '__main__':
                 wandb.log({"gen_pcd": image})
             if it % args.increase_freq == args.increase_freq - 1:
                 with torch.no_grad():
+                    ckpt_mgr.save(model, args, 0, others=opt_states, step=it)
                     model.enlarge_sample_num()
             it += 1
 
