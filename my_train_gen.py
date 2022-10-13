@@ -53,7 +53,7 @@ parser.add_argument('--val_freq', type=int, default=2000)
 parser.add_argument('--increase_freq', type=int, default=30000)
 parser.add_argument('--max_iters', type=int, default=float('inf'))
 parser.add_argument('--tag', type=str, default=None)
-parser.add_argument('--src_dir', type=str, default='..//diffusion-point-cloud/data/nerf')
+parser.add_argument('--src_dir', type=str, default='../diffusion-point-cloud/data/nerf')
 args = parser.parse_args()
 
 def plot(pts):
