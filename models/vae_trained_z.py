@@ -51,7 +51,7 @@ class MyVAE(Module):
         self.point_clouds = []
         for path in os.listdir(self.args.src_dir):
             # append tensor of shape [1, N, 3]
-            self.point_clouds.append(torch.load(os.path.join(self.args.src_dir, path))['points_with_color'][:,:3].unsqueeze(0))
+            self.point_clouds.append(torch.load(os.path.join(self.args.src_dir, path)).unsqueeze(0))
         self.point_clouds = torch.cat(self.point_clouds, 0).to(self.args.device)
 
         return
