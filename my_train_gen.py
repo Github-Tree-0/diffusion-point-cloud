@@ -122,10 +122,11 @@ if __name__ == '__main__':
                 print('iteration: {}, loss = {}'.format(it, acc_loss / args.val_freq))
                 acc_loss = 0.0
                 with torch.no_grad():
-                    samples = model.sample()[0].detach().cpu()
-                fig = plot(samples)
-                image = wandb.Image(fig, caption="generated point cloud")
-                wandb.log({"gen_pcd": image})
+                    samples = model.sample().detach().cpu()
+                for i, sample in enumerate(samples):
+                    fig = plot(sample)
+                    image = wandb.Image(fig, caption="generated point cloud_{}".format(i))
+                    wandb.log({"gen_pcd_{}".format(i): image})
             if it % args.increase_freq == args.increase_freq - 1:
                 with torch.no_grad():
                     opt_states = {
