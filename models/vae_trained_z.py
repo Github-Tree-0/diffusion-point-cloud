@@ -64,7 +64,20 @@ class MyVAE(Module):
 
         return loss
 
-    def sample(self):
-        samples = self.diffusion.sample(self.sample_num, context=self.zs, flexibility=self.args.flexibility)
+    def sample(self, num=None):
+        if num != None:
+            samples = self.diffusion.sample(num, context=self.zs, flexibility=self.args.flexibility)
+        else:
+            samples = self.diffusion.sample(self.sample_num, context=self.zs, flexibility=self.args.flexibility)
+
+        return samples
+
+    def sample_interpolate(self, num, ratios):
+        assert(self.zs.shape[0] == 2)
+        z1 = self.zs[0]
+        z2 = self.zs[1]
+        interpolated_zs = ratios.unsqueeze(1) * (z2 - z1) + z1
+        
+        samples = self.diffusion.sample(num, context=interpolated_zs, flexibility=self.args.flexibility)
 
         return samples
