@@ -27,6 +27,7 @@ KDTree::KDTree(double *points_1, double *points_2, int32_t num_pts) {
 }
 
 void KDTree::build(int32_t at, int32_t l, int32_t r, int32_t d) {
+    this->rotate_points(l, r);
     int32_t m = (l + r) >> 1;
     dim = d;
     std::nth_element(this->p1 + l, this->p1 + m, this->p1 + r + 1, cmp);
@@ -66,5 +67,24 @@ void KDTree::output_index(int *out_index1, int *out_index2) {
     for (int i = 1; i <= this->num; ++i) {
         out_index1[i-1] = this->p1[i].index;
         out_index2[i-1] = this->p2[i].index;
+    }
+}
+
+void KDTree::rotate_points(int32_t l, int32_t r) {
+    double X = rand_angle(), Y = rand_angle(), Z = rand_angle();
+    double c1 = cos(Y), c2 = cos(X), c3 = cos(Z);
+    double s1 = sin(Y), s2 = sin(X), s3 = sin(Z);
+    for (int i = l; i <= r; ++i) {
+        double x, y, z;
+        // Rotate p1
+        x = this->p1[i].cor[0]; y = this->p1[i].cor[1]; z = this->p1[i].cor[2];
+        this->p1[i].cor[0] = x*(c1*c3+s1*s2*s3) + y*(c3*s1*s2-c1*s3) + z*(c2*s1);
+        this->p1[i].cor[1] = x*(c2*s3) + y*(c2*s3) - z*(s2);
+        this->p1[i].cor[2] = x*(c1*s2*s3-s1*c3) + y*(s1*s3+c1*c3*s2) + z*(c1*c2);
+        // Rotate p2
+        x = this->p2[i].cor[0]; y = this->p2[i].cor[1]; z = this->p2[i].cor[2];
+        this->p2[i].cor[0] = x*(c1*c3+s1*s2*s3) + y*(c3*s1*s2-c1*s3) + z*(c2*s1);
+        this->p2[i].cor[1] = x*(c2*s3) + y*(c2*s3) - z*(s2);
+        this->p2[i].cor[2] = x*(c1*s2*s3-s1*c3) + y*(s1*s3+c1*c3*s2) + z*(c1*c2);
     }
 }
