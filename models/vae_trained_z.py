@@ -71,7 +71,7 @@ class MyVAE(Module):
         pcd = o3d.geometry.PointCloud()
         std = 0
         for points in sample_points:
-            pcd.points = o3d.utility.Vector3dVector(self.sample_points)
+            pcd.points = o3d.utility.Vector3dVector(points)
             pcd_tree = o3d.geometry.KDTreeFlann(pcd)
             knn_index = []
             for point in pcd.points:
