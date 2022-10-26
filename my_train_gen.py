@@ -56,8 +56,8 @@ parser.add_argument('--increase_freq', type=int, default=30000)
 parser.add_argument('--max_iters', type=int, default=float('inf'))
 parser.add_argument('--tag', type=str, default=None)
 parser.add_argument('--src_dir', type=str, default='../diffusion-point-cloud/data/nerf')
-parser.add_argument('--num_ratio', type=int, default=10)
-parser.add_argument('--num_knn_sample_points', type=int, default=20000)
+parser.add_argument('--num_ratio', type=int, default=2)
+parser.add_argument('--num_knn_sample_points', type=int, default=5000)
 
 # Wandb
 parser.add_argument('--group_name', type=str)
