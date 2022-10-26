@@ -49,11 +49,15 @@ class MyVAE(Module):
         return
     
     def read_point_clouds(self):
+        np.random.seed(0)
         self.point_clouds = []
         for path in os.listdir(self.args.src_dir):
             # append tensor of shape [1, N, 3]
-            self.point_clouds.append(torch.load(os.path.join(self.args.src_dir, path)).unsqueeze(0))
+            point_cloud = torch.load(os.path.join(self.args.src_dir, path))
+            assert(point_cloud.shape[0] >= self.args.load_pcd_shape)
+            self.point_clouds.append(point_cloud[np.random.choice(point_cloud.shape[0], self.args.load_pcd_shape, replace=False)].unsqueeze(0))
         self.point_clouds = torch.cat(self.point_clouds, 0).to(self.args.device)
+        np.random.seed()
 
         return
 

@@ -37,6 +37,7 @@ parser.add_argument('--num_samples', type=int, default=4)
 parser.add_argument('--sample_num_points', type=int, default=2048)
 parser.add_argument('--residual', type=eval, default=True, choices=[True, False])
 parser.add_argument('--spectral_norm', type=eval, default=False, choices=[True, False])
+parser.add_argument('--load_pcd_shape', type=int, default=524288)
 
 # Optimizer and scheduler
 parser.add_argument('--lr', type=float, default=2e-3)
