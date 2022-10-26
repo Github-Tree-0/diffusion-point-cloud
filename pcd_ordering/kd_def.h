@@ -13,7 +13,6 @@ struct Point {double cor[3]; int index;};
 int dim;
 inline bool cmp(const Point& a, const Point& b) { return a.cor[dim] < b.cor[dim]; }
 inline double rand_angle() {
-    std::srand((unsigned)time(NULL));
     return std::rand() / double(RAND_MAX) * Pi_2;
 }
 

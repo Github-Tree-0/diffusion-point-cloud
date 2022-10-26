@@ -24,10 +24,10 @@ KDTree::KDTree(double *points_1, double *points_2, int32_t num_pts) {
             this->p2[i].cor[j] = double(points_2[ptr++]);
         }
     }
+    // this->rotate_points(1, num_pts);
 }
 
 void KDTree::build(int32_t at, int32_t l, int32_t r, int32_t d) {
-    this->rotate_points(l, r);
     int32_t m = (l + r) >> 1;
     dim = d;
     std::nth_element(this->p1 + l, this->p1 + m, this->p1 + r + 1, cmp);
@@ -71,6 +71,7 @@ void KDTree::output_index(int *out_index1, int *out_index2) {
 }
 
 void KDTree::rotate_points(int32_t l, int32_t r) {
+    std::srand(0);
     double X = rand_angle(), Y = rand_angle(), Z = rand_angle();
     double c1 = cos(Y), c2 = cos(X), c3 = cos(Z);
     double s1 = sin(Y), s2 = sin(X), s3 = sin(Z);

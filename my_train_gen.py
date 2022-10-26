@@ -45,6 +45,7 @@ parser.add_argument('--max_grad_norm', type=float, default=10)
 parser.add_argument('--end_lr', type=float, default=1e-4)
 parser.add_argument('--sched_start_epoch', type=int, default=200*THOUSAND)
 parser.add_argument('--sched_end_epoch', type=int, default=800*THOUSAND)
+parser.add_argument('--max_std_weight', type=float, default=1)
 
 # Training
 parser.add_argument('--device', type=str, default='cuda')
@@ -54,6 +55,13 @@ parser.add_argument('--increase_freq', type=int, default=30000)
 parser.add_argument('--max_iters', type=int, default=float('inf'))
 parser.add_argument('--tag', type=str, default=None)
 parser.add_argument('--src_dir', type=str, default='../diffusion-point-cloud/data/nerf')
+parser.add_argument('--num_ratio', type=int, default=10)
+parser.add_argument('--num_knn_sample_points', type=int, default=20000)
+
+# Wandb
+parser.add_argument('--group_name', type=str)
+parser.add_argument('--job_name', type=str)
+
 args = parser.parse_args()
 
 def plot(pts):
@@ -64,13 +72,13 @@ def plot(pts):
 
     return fig
 
-def train(model, optimizer, scheduler, it):
+def train(args, model, optimizer, scheduler, it):
     # Reset grad and model state
     optimizer.zero_grad()
     model.train()
 
     # Forward
-    loss = model.get_loss()
+    loss, neg_elbo, std = model.get_loss(min(it/300000) * args.max_std_weight)
 
     # Backward and optimize
     loss.backward()
@@ -82,13 +90,15 @@ def train(model, optimizer, scheduler, it):
         'iters': it,
         'learning rate': optimizer.param_groups[0]['lr'],
         'Grad': orig_grad_norm,
-        'loss': loss.item()
+        'loss': loss.item(),
+        'neg_elbo': neg_elbo,
+        'std': std
     })
 
     return loss.item()
 
 if __name__ == '__main__':
-    wandb.init(config=args, project='diffusion-point-cloud')
+    wandb.init(config=args, project='diffusion-point-cloud', group=args.group_name, job_type=args.job_name)
     # Model
     print('Building model...')
     model = MyVAE(args).to(args.device)
@@ -116,7 +126,7 @@ if __name__ == '__main__':
         it = 0
         acc_loss = 0.0
         while it < args.max_iters:
-            loss_val = train(model, optimizer, scheduler, it)
+            loss_val = train(args, model, optimizer, scheduler, it)
             acc_loss += loss_val
             if it % args.val_freq == args.val_freq - 1 or it == args.max_iters - 1:
                 print('iteration: {}, loss = {}'.format(it, acc_loss / args.val_freq))

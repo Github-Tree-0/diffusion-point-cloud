@@ -3,6 +3,7 @@ import torch
 from torch.nn import Module
 import os
 import numpy as np
+import open3d as o3d
 
 from .common import *
 from .encoders import *
@@ -56,13 +57,28 @@ class MyVAE(Module):
 
         return
 
-    def get_loss(self):
+    def get_loss(self, std_weight):
         # Negative ELBO of P(X|z)
         neg_elbo = self.diffusion.get_loss(self.sampled_pcd, self.zs)
-        # Loss
-        loss = neg_elbo
+        
+        with torch.no_grad():
+            ratios = torch.rand(self.args.num_ratio).to(self.diffusion.device)
+        sample_points = self.sample_interpolate(self.args.num_knn_sample_points, ratios)
+        pcd = o3d.geometry.PointCloud()
+        std = 0
+        for points in sample_points:
+            pcd.points = o3d.utility.Vector3dVector(self.sample_points)
+            pcd_tree = o3d.geometry.KDTreeFlann(pcd)
+            knn_index = []
+            for point in pcd.points:
+                [_, idx, _] = pcd_tree.search_knn_vector_3d(point, 1)
+                knn_index.append(idx)
+            std += torch.std(torch.sqrt(torch.sum((sample_points - sample_points[knn_index])**2, dim=1)), unbiased=False)
 
-        return loss
+        # Loss
+        loss = neg_elbo + std * std_weight
+
+        return loss, neg_elbo.item(), std.item()
 
     def sample(self, num=None):
         if num != None:
