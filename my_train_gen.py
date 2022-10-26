@@ -79,7 +79,7 @@ def train(args, model, optimizer, scheduler, it):
     model.train()
 
     # Forward
-    loss, neg_elbo, std = model.get_loss(min(it/300000) * args.max_std_weight)
+    loss, neg_elbo, std = model.get_loss(min(it/300000, 1.0) * args.max_std_weight)
 
     # Backward and optimize
     loss.backward()
