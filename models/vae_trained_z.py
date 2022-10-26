@@ -66,7 +66,7 @@ class MyVAE(Module):
         neg_elbo = self.diffusion.get_loss(self.sampled_pcd, self.zs)
         
         with torch.no_grad():
-            ratios = torch.rand(self.args.num_ratio).to(self.diffusion.device)
+            ratios = torch.rand(self.args.num_ratio).to(self.args.device)
         sample_points = self.sample_interpolate(self.args.num_knn_sample_points, ratios)
         pcd = o3d.geometry.PointCloud()
         std = 0
