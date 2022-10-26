@@ -71,13 +71,13 @@ class MyVAE(Module):
         pcd = o3d.geometry.PointCloud()
         std = 0
         for points in sample_points:
-            pcd.points = o3d.utility.Vector3dVector(points)
+            pcd.points = o3d.utility.Vector3dVector(points.detach().cpu().numpy())
             pcd_tree = o3d.geometry.KDTreeFlann(pcd)
             knn_index = []
             for point in pcd.points:
                 [_, idx, _] = pcd_tree.search_knn_vector_3d(point, 1)
                 knn_index.append(idx)
-            std += torch.std(torch.sqrt(torch.sum((sample_points - sample_points[knn_index])**2, dim=1)), unbiased=False)
+            std += torch.std(torch.sqrt(torch.sum((points - points[np.array(knn_index)])**2, dim=1)), unbiased=False)
 
         # Loss
         loss = neg_elbo + std * std_weight
