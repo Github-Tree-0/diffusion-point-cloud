@@ -3,7 +3,6 @@ import torch
 from torch.nn import Module
 import os
 import numpy as np
-import open3d as o3d
 
 from .common import *
 from .encoders import *
@@ -68,16 +67,9 @@ class MyVAE(Module):
         with torch.no_grad():
             ratios = torch.rand(self.args.num_ratio).to(self.args.device)
         sample_points = self.sample_interpolate(self.args.num_knn_sample_points, ratios)
-        pcd = o3d.geometry.PointCloud()
-        std = 0
-        for points in sample_points:
-            pcd.points = o3d.utility.Vector3dVector(points.detach().cpu().numpy())
-            pcd_tree = o3d.geometry.KDTreeFlann(pcd)
-            knn_index = []
-            for point in pcd.points:
-                [_, idx, _] = pcd_tree.search_knn_vector_3d(point, 1)
-                knn_index.append(idx)
-            std += torch.std(torch.sqrt(torch.sum((points - points[np.array(knn_index)])**2, dim=1)), unbiased=False)
+        dists = torch.cdist(sample_points, sample_points, p=2)
+        dist_norms, _ = torch.topk(dists, self.args.top_k+1, dim=-1, largest=False, sorted=False)
+        std = torch.mean(torch.std(torch.mean(dist_norms[...,1:], dim=-1), dim=-1))
 
         # Loss
         loss = neg_elbo + std * std_weight

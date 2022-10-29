@@ -57,11 +57,15 @@ parser.add_argument('--max_iters', type=int, default=float('inf'))
 parser.add_argument('--tag', type=str, default=None)
 parser.add_argument('--src_dir', type=str, default='../diffusion-point-cloud/data/nerf')
 parser.add_argument('--num_ratio', type=int, default=2)
+parser.add_argument('--top_k', type=int, default=64)
 parser.add_argument('--num_knn_sample_points', type=int, default=5000)
 
 # Wandb
 parser.add_argument('--group_name', type=str)
 parser.add_argument('--job_name', type=str)
+
+# ckpt
+parser.add_argument('--ckpt_path', type=str, default='')
 
 args = parser.parse_args()
 
@@ -103,6 +107,11 @@ if __name__ == '__main__':
     # Model
     print('Building model...')
     model = MyVAE(args).to(args.device)
+    if args.ckpt_path != '':
+        print('Loading from {}'.format(args.ckpt_path))
+        ckpt = torch.load(args.ckpt_path)
+        model.load_state_dict(ckpt['state_dict'])
+
     print(repr(model))
     # if args.spectral_norm:
     #     add_spectral_norm(model, logger=logger)
