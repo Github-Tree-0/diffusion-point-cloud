@@ -63,7 +63,7 @@ class MyVAE(Module):
 
     def get_loss(self, std_weight):
         # Negative ELBO of P(X|z)
-        neg_elbo = self.diffusion.get_loss(self.sampled_pcd, torch.cat([self.zs, torch.mean(self.zs, dim=0).unsqueeze(0)], dim=0))
+        neg_elbo = self.diffusion.get_loss(self.sampled_pcd, torch.cat([self.zs, torch.mean(self.zs, dim=0).unsqueeze(0)], dim=0).float())
         
         # with torch.no_grad():
         #     ratios = torch.rand(self.args.num_ratio).to(self.args.device)
