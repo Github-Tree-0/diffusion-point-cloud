@@ -56,7 +56,7 @@ class MyVAE(Module):
             point_cloud = torch.load(os.path.join(self.args.src_dir, path))
             assert(point_cloud.shape[0] >= self.args.load_pcd_shape)
             self.point_clouds.append(point_cloud[np.random.choice(point_cloud.shape[0], self.args.load_pcd_shape, replace=False)].unsqueeze(0))
-        self.point_clouds = torch.cat(self.point_clouds, 0).to(self.args.device)
+        self.point_clouds = torch.cat(self.point_clouds, 0).float().to(self.args.device)
         np.random.seed()
 
         return
