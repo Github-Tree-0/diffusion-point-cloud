@@ -135,6 +135,7 @@ if __name__ == '__main__':
     try:
         it = 0
         acc_loss = 0.0
+        ratios = torch.tensor([0.0, 0.375, 0.5, 0.625, 1.0]).to(args.device)
         while it < args.max_iters:
             loss_val = train(args, model, optimizer, scheduler, it)
             acc_loss += loss_val
@@ -142,7 +143,6 @@ if __name__ == '__main__':
                 print('iteration: {}, loss = {}'.format(it, acc_loss / args.val_freq))
                 acc_loss = 0.0
                 with torch.no_grad():
-                    ratios = torch.tensor([0.0, 0.375, 0.5, 0.625, 1.0])
                     samples = model.sample_interpolate(50000, ratios).detach().cpu()
                 for i, sample in enumerate(samples):
                     fig = plot(sample)
