@@ -26,7 +26,7 @@ class MyVAE(Module):
         self.pcd_index[np.random.choice(np.arange(self.points_num), self.sample_num, replace=False)] = True
         self.sampled_pcd = self.point_clouds[:,self.pcd_index]
 
-        self.zs = nn.Parameter(torch.rand((self.point_clouds.shape[0], args.latent_dim), requires_grad=True))
+        self.zs = nn.Parameter(torch.rand((2, args.latent_dim), requires_grad=True))
         self.flow = build_latent_flow(args)
         self.diffusion = DiffusionPoint(
             net = PointwiseNet(point_dim=3, context_dim=args.latent_dim, residual=args.residual),
