@@ -84,7 +84,7 @@ def train(args, model, optimizer, scheduler, it):
 
     # Forward
     # loss, neg_elbo, std = model.get_loss(min(it/300000, 1.0) * args.max_std_weight)
-    loss, neg_elbo, std = model.get_loss(args.max_std_weight)
+    loss, neg_elbo = model.get_loss(args.max_std_weight)
 
     # Backward and optimize
     loss.backward()
@@ -98,7 +98,6 @@ def train(args, model, optimizer, scheduler, it):
         'Grad': orig_grad_norm,
         'loss': loss.item(),
         'neg_elbo': neg_elbo,
-        'std': std
     })
 
     return loss.item()
@@ -143,11 +142,12 @@ if __name__ == '__main__':
                 print('iteration: {}, loss = {}'.format(it, acc_loss / args.val_freq))
                 acc_loss = 0.0
                 with torch.no_grad():
-                    samples = model.sample().detach().cpu()
+                    ratios = torch.tensor([0.0, 0.375, 0.5, 0.625, 1.0])
+                    samples = model.sample_interpolate(50000, ratios).detach().cpu()
                 for i, sample in enumerate(samples):
                     fig = plot(sample)
                     image = wandb.Image(fig, caption="generated point cloud_{}".format(i))
-                    wandb.log({"gen_pcd_{}".format(i): image})
+                    wandb.log({"gen_pcd_ratio={}".format(ratios[i]): image})
             if it % args.increase_freq == args.increase_freq - 1:
                 with torch.no_grad():
                     opt_states = {

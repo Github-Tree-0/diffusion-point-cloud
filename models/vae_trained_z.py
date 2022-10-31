@@ -50,7 +50,8 @@ class MyVAE(Module):
     def read_point_clouds(self):
         np.random.seed(0)
         self.point_clouds = []
-        for path in os.listdir(self.args.src_dir):
+        paths = ['r_0.pth', 'r_1.pth', 'r_0.5.pth']
+        for path in paths:
             # append tensor of shape [1, N, 3]
             point_cloud = torch.load(os.path.join(self.args.src_dir, path))
             assert(point_cloud.shape[0] >= self.args.load_pcd_shape)
@@ -62,19 +63,20 @@ class MyVAE(Module):
 
     def get_loss(self, std_weight):
         # Negative ELBO of P(X|z)
-        neg_elbo = self.diffusion.get_loss(self.sampled_pcd, self.zs)
+        neg_elbo = self.diffusion.get_loss(self.sampled_pcd, torch.cat([self.zs, torch.mean(self.zs, dim=0).unsqueeze(0)], dim=0))
         
-        with torch.no_grad():
-            ratios = torch.rand(self.args.num_ratio).to(self.args.device)
-        sample_points = self.sample_interpolate(self.args.num_knn_sample_points, ratios)
-        dists = torch.cdist(sample_points, sample_points, p=2)
-        dist_norms, _ = torch.topk(dists, self.args.top_k+1, dim=-1, largest=False, sorted=False)
-        std = torch.mean(torch.std(torch.mean(dist_norms[...,1:], dim=-1), dim=-1))
+        # with torch.no_grad():
+        #     ratios = torch.rand(self.args.num_ratio).to(self.args.device)
+        # sample_points = self.sample_interpolate(self.args.num_knn_sample_points, ratios)
+        # dists = torch.cdist(sample_points, sample_points, p=2)
+        # dist_norms, _ = torch.topk(dists, self.args.top_k+1, dim=-1, largest=False, sorted=False)
+        # std = torch.mean(torch.std(torch.mean(dist_norms[...,1:], dim=-1), dim=-1))
 
         # Loss
-        loss = neg_elbo + std * std_weight
+        # loss = neg_elbo + std * std_weight
+        loss = neg_elbo
 
-        return loss, neg_elbo.item(), std.item()
+        return loss, neg_elbo.item()
 
     def sample(self, num=None):
         if num != None:
