@@ -59,6 +59,7 @@ parser.add_argument('--src_dir', type=str, default='../diffusion-point-cloud/dat
 parser.add_argument('--num_ratio', type=int, default=2)
 parser.add_argument('--top_k', type=int, default=64)
 parser.add_argument('--num_knn_sample_points', type=int, default=5000)
+parser.add_argument('--num_pcds', type=int, default=2)
 
 # Wandb
 parser.add_argument('--group_name', type=str)

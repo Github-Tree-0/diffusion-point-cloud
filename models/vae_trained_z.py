@@ -50,7 +50,12 @@ class MyVAE(Module):
     def read_point_clouds(self):
         np.random.seed(0)
         self.point_clouds = []
-        paths = ['r_0.pth', 'r_1.pth', 'r_0.5.pth']
+        if self.args.num_pcds == 3:
+            paths = ['r_0.pth', 'r_1.pth', 'r_0.5.pth']
+        elif self.args.num_pcds == 2:
+            paths = ['r_0.pth', 'r_1.pth']
+        else:
+            assert False
         for path in paths:
             # append tensor of shape [1, N, 3]
             point_cloud = torch.load(os.path.join(self.args.src_dir, path))
@@ -63,7 +68,10 @@ class MyVAE(Module):
 
     def get_loss(self, std_weight):
         # Negative ELBO of P(X|z)
-        neg_elbo = self.diffusion.get_loss(self.sampled_pcd, torch.cat([self.zs, torch.mean(self.zs, dim=0).unsqueeze(0)], dim=0).float())
+        if self.args.num_pcds == 3:
+            neg_elbo = self.diffusion.get_loss(self.sampled_pcd, torch.cat([self.zs, torch.mean(self.zs, dim=0).unsqueeze(0)], dim=0).float())
+        elif self.args.num_pcds == 2:
+            neg_elbo = self.diffusion.get_loss(self.sampled_pcd, self.zs)
         
         # with torch.no_grad():
         #     ratios = torch.rand(self.args.num_ratio).to(self.args.device)
